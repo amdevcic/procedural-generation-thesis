@@ -30,14 +30,14 @@ public class Room : MonoBehaviour
     }
 
     void OnDrawGizmos() {
-        Gizmos.DrawWireCube(transform.position+GetCenter(), new Vector3(width, height, length));
+        Gizmos.DrawWireCube(GetCenter(), new Vector3(width, height, length));
     }
 
     Vector3 GetCenter() {
         return new Vector3(
-            (float)width/2,
-            (float)height/2,
-            (float)length/2
+            transform.position.x + (float)width/2,
+            transform.position.y + (float)height/2,
+            transform.position.z + (float)length/2
             );
     }
 }
