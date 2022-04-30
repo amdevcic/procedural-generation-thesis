@@ -5,30 +5,46 @@ using UnityEngine;
 public class RoomGenerator : MonoBehaviour
 {
     List<Room> rooms;
-    public int minWidth, maxWidth, minLength, maxLength;
-    public int numberOfRooms;
-    public GameObject roomPrefab;
+    public int totalWidth;
+    public List<GameObject> roomPrefabs;
 
-    void Awake()
-    {
+    private void Awake() {
         rooms = new List<Room>();
+    }
+
+    public void Generate() {
+        DestroyAll();
         Vector3 offset = Vector3.zero;
-        for (int i=0; i<numberOfRooms; i++) {
+        while (offset.x < totalWidth) {
             GameObject roomObject = Instantiate(
-                roomPrefab, 
+                roomPrefabs[Random.Range(0, roomPrefabs.Count)],
                 transform.position + offset,
                 Quaternion.identity) as GameObject;
             Room room = roomObject.GetComponent<Room>();
-            room.width = Random.Range(minWidth, maxWidth);
-            room.length = Random.Range(minLength, maxLength);
+            room.SetRandomDimensions();
             offset.x += room.width;
             rooms.Add(room);
         }
+        Destroy(rooms[rooms.Count-1].gameObject);
+        rooms.RemoveAt(rooms.Count-1);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private void DestroyAll() {
+        foreach (Room room in rooms) {
+            Destroy(room.gameObject);
+        }
+        rooms = new List<Room>();
+    }
+
+    public Vector3 GetStartingPosition() {
+        if (rooms.Count > 0){
+            return rooms[0].GetCenter();
+        }
+        else
+            return Vector3.zero;
+    }
+
+    public void SetTotalWidth(float width) {
+        totalWidth = (int)width;
     }
 }
