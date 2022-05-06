@@ -9,9 +9,11 @@ public class Room : MonoBehaviour
     List<Vector3> vertices;
     List<int> triangles;
     public int width, length;
+    [SerializeField]
     private int minWidth = 3, maxWidth = 10, minLength = 3, maxLength = 10;
     private int height = 3;
     RoomMeshGenerator meshGenerator;
+    public List<RoomItem> items;
 
     void Start()
     {
@@ -21,6 +23,7 @@ public class Room : MonoBehaviour
         Build();
         GetComponent<MeshCollider>().sharedMesh = null;
         GetComponent<MeshCollider>().sharedMesh = mesh;
+        Populate();
     }
 
     void Build()
@@ -42,9 +45,34 @@ public class Room : MonoBehaviour
 
     public Vector3 GetCenter() {
         return new Vector3(
-            transform.position.x + (float)width/2,
-            transform.position.y + (float)height/2,
-            transform.position.z + (float)length/2
+            transform.position.x + (float)width*0.5f,
+            transform.position.y + (float)height*0.5f,
+            transform.position.z + (float)length*0.5f
             );
+    }
+
+    private IEnumerable<Vector3> GetCorners(float offset) {
+        float xOffset = width * offset * 0.5f, zOffset = length * offset * 0.5f;
+        yield return new Vector3(-xOffset, 0,  zOffset);
+        yield return new Vector3( xOffset, 0,  zOffset);
+        yield return new Vector3(-xOffset, 0, -zOffset);
+        yield return new Vector3( xOffset, 0, -zOffset);
+        yield break;
+    }
+
+    private void Populate() {
+        Vector3 center = GetCenter();
+        foreach (RoomItem item in items)
+        {
+            switch (item.pos) {
+                case RoomItem.Position.Corners:
+                    foreach (Vector3 corner in GetCorners(item.offset))
+                        Instantiate(item.prefab, center + corner, Quaternion.identity, gameObject.transform);
+                    break;
+                case RoomItem.Position.Center:
+                    Instantiate(item.prefab, center, Quaternion.identity, gameObject.transform);
+                    break;
+            }
+        }
     }
 }
