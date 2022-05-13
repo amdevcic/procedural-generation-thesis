@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -39,11 +37,8 @@ public class PlayerController : MonoBehaviour
         Vector3 move = transform.right * x + transform.forward * z;
         controller.SimpleMove(move*speed);
 
-        // transform.Rotate(0, Input.GetAxis("Mouse X")*mouseSensitivity, 0);
-        // playerCamera.transform.Rotate(
-        //     -Input.GetAxis("Mouse Y")*mouseSensitivity, 
-        //     0, 0);
-        transform.rotation = Quaternion.Euler(xrotation, yrotation, 0);
+        transform.Rotate(0, Input.GetAxis("Mouse X")*mouseSensitivity, 0);
+        playerCamera.transform.rotation = Quaternion.Euler(xrotation, yrotation, 0);
 
     }
 }
