@@ -1256,6 +1256,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   mouseSensitivity: 5
+  turnLimit: 80
 --- !u!1 &1173270732
 GameObject:
   m_ObjectHideFlags: 0

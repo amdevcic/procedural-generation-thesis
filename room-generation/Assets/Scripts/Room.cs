@@ -29,8 +29,9 @@ public class Room : MonoBehaviour
     void Build()
     {
         mesh.Clear();
-        mesh.vertices = meshGenerator.getMeshVertices();
-        mesh.triangles = meshGenerator.getMeshTriangles();
+        mesh.SetVertices(meshGenerator.GetVerts());
+        mesh.SetTriangles(meshGenerator.GetIndices(), 0);
+        mesh.SetUVs(0, meshGenerator.GetUvs());
         mesh.RecalculateNormals();
     }
 

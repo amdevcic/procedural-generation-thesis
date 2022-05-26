@@ -1,56 +1,83 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class RoomMeshGenerator
 { 
     private int width, height, length;
-    private Vector3[] vertices;
-    private int[] faces = new int[] {
-        0, 1, 2, 3, // bottom
-        6, 7, 4, 5, // top
-        0, 4, 1, 5, // left
-        3, 7, 2, 6, // right
-        2, 6, 0, 4, // front
-        1, 5, 3, 7, // back
-    };
+    List<Vector3> verts;
+    List<int> indices;
+    List<Vector2> uvs;
+    private float textureScaleFactor = 0.25f;
+    
     public RoomMeshGenerator(int width, int height, int length)
     {
         this.width = width;
         this.height = height;
         this.length = length;
 
-        vertices = new Vector3[] {
-            new Vector3(0, 0, 0),
+        verts = new List<Vector3>();
+        indices = new List<int>();
+        uvs = new List<Vector2>();
+
+        CreateFloorAndCeiling();
+        CreateWall(new Vector3(0, 0, 0), new Vector3(0, 0, length));
+        CreateWall(new Vector3(0, 0, length), new Vector3(width, 0, length));
+        CreateWall(new Vector3(width, 0, length), new Vector3(width, 0, 0));
+        CreateWall(new Vector3(width, 0, 0), new Vector3(0, 0, 0));
+    }
+
+    private void CreateFloorAndCeiling() {
+        AddQuad(
             new Vector3(0, 0, length),
-            new Vector3(width, 0, 0),
             new Vector3(width, 0, length),
-            
+            new Vector3(0, 0, 0),
+            new Vector3(width, 0, 0)
+        );
+        AddQuad(
             new Vector3(0, height, 0),
-            new Vector3(0, height, length),
             new Vector3(width, height, 0),
-            new Vector3(width, height, length),
-        };
+            new Vector3(0, height, length),
+            new Vector3(width, height, length)
+        );
+    }
+    private void CreateWall(Vector3 start, Vector3 end) { //doors also
+        AddQuad(
+            start + height*Vector3.up,
+            end + height*Vector3.up,
+            start,
+            end
+        );
     }
 
-    public Vector3[] getMeshVertices() {
-        Vector3[] meshVertices = new Vector3[6*4];
-        for (int i=0; i<6*4; i++) {
-            meshVertices[i] = vertices[faces[i]];
-        }
-        return meshVertices;
+    private void AddQuad(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br) {
+        int n = verts.Count;
+        verts.Add(tl);
+        verts.Add(tr);
+        verts.Add(bl);
+        verts.Add(br);
+
+        // TODO: fix uvs
+        uvs.Add(tl);
+        uvs.Add(tr);
+        uvs.Add(bl);
+        uvs.Add(br);
+
+
+        indices.Add(n);
+        indices.Add(n+1);
+        indices.Add(n+2);
+        indices.Add(n+1);
+        indices.Add(n+3);
+        indices.Add(n+2);
     }
 
-    public int[] getMeshTriangles() {
-        int[] meshTriangles = new int[6*2*3];
-        for (int i=0; i<6; i++) {
-            meshTriangles[i*6] = i*4;
-            meshTriangles[i*6+1] = meshTriangles[i*6+3] = i*4+1;
-            meshTriangles[i*6+2] = meshTriangles[i*6+5] = i*4+2;
-            meshTriangles[i*6+4] = i*4+3;
-        }
-        
-        return meshTriangles;
+    public List<Vector3> GetVerts() {
+        return verts;
     }
-
+    public List<int> GetIndices() {
+        return indices;
+    }
+    public List<Vector2> GetUvs() {
+        return uvs;
+    }
 }
