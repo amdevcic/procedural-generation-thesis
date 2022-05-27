@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class RoomMeshGenerator
 { 
     private int width, height, length, doorWidth;
+    private float offset;
     List<Vector3> verts;
     List<int> indices;
     List<Vector2> uvs;
@@ -13,18 +14,17 @@ public class RoomMeshGenerator
         Left, Top, Right, Bottom 
     }
 
-    public RoomMeshGenerator(int width, int height, int length, int doorWidth)
+    public RoomMeshGenerator(int width, int height, int length, int doorWidth, float offset)
     {
         this.width = width;
         this.height = height;
         this.length = length;
         this.doorWidth = doorWidth;
+        this.offset = offset;
         
         for (int i=0; i<4; i++) {
             doors[i] = new List<int>();
         }
-        // doors[(int) Wall.Left].Add(1);
-        // doors[(int) Wall.Right].Add(length-doorWidth-1);
     }
 
     public void Build() {
@@ -33,10 +33,14 @@ public class RoomMeshGenerator
         uvs = new List<Vector2>();
 
         CreateFloorAndCeiling();
-        CreateWall(new Vector3(0, 0, 0), new Vector3(0, 0, length), doors[(int) Wall.Left]);            // left
-        CreateWall(new Vector3(0, 0, length), new Vector3(width, 0, length), doors[(int) Wall.Top]);    // top
-        CreateWall(new Vector3(width, 0, length), new Vector3(width, 0, 0), doors[(int) Wall.Right]);   // right
-        CreateWall(new Vector3(width, 0, 0), new Vector3(0, 0, 0), doors[(int) Wall.Bottom]);           // bottom
+        // CreateWall(new Vector3(0, 0, 0), new Vector3(0, 0, length), doors[(int) Wall.Left]);            // left
+        // CreateWall(new Vector3(0, 0, length), new Vector3(width, 0, length), doors[(int) Wall.Top]);    // top
+        // CreateWall(new Vector3(width, 0, length), new Vector3(width, 0, 0), doors[(int) Wall.Right]);   // right
+        // CreateWall(new Vector3(width, 0, 0), new Vector3(0, 0, 0), doors[(int) Wall.Bottom]);           // bottom
+        CreateWall(new Vector3(offset, 0, offset), new Vector3(offset, 0, length-offset), doors[(int) Wall.Left]);                  // left
+        CreateWall(new Vector3(offset, 0, length-offset), new Vector3(width-offset, 0, length-offset), doors[(int) Wall.Top]);      // top
+        CreateWall(new Vector3(width-offset, 0, length-offset), new Vector3(width-offset, 0, offset), doors[(int) Wall.Right]);     // right
+        CreateWall(new Vector3(width-offset, 0, offset), new Vector3(offset, 0, offset), doors[(int) Wall.Bottom]);                 // bottom
     }
 
     public void AddDoor(int position, Wall wall) {
@@ -44,17 +48,29 @@ public class RoomMeshGenerator
     }
 
     private void CreateFloorAndCeiling() {
+        // AddQuad(
+        //     new Vector3(0, 0, length),
+        //     new Vector3(width, 0, length),
+        //     new Vector3(0, 0, 0),
+        //     new Vector3(width, 0, 0)
+        // );
+        // AddQuad(
+        //     new Vector3(0, height, 0),
+        //     new Vector3(width, height, 0),
+        //     new Vector3(0, height, length),
+        //     new Vector3(width, height, length)
+        // );
         AddQuad(
-            new Vector3(0, 0, length),
-            new Vector3(width, 0, length),
-            new Vector3(0, 0, 0),
-            new Vector3(width, 0, 0)
+            new Vector3(offset, 0, length-offset),
+            new Vector3(width-offset, 0, length-offset),
+            new Vector3(offset, 0, offset),
+            new Vector3(width-offset, 0, offset)
         );
         AddQuad(
-            new Vector3(0, height, 0),
-            new Vector3(width, height, 0),
-            new Vector3(0, height, length),
-            new Vector3(width, height, length)
+            new Vector3(offset, height, offset),
+            new Vector3(width-offset, height, offset),
+            new Vector3(offset, height, length-offset),
+            new Vector3(width-offset, height, length-offset)
         );
     }
     private void CreateWall(Vector3 start, Vector3 end, List<int> doorPos) {
@@ -62,7 +78,8 @@ public class RoomMeshGenerator
         Vector3 wallDir = (end-start).normalized;
         Vector3 wallStart = start, wallEnd = start;
         foreach (int i in doorPos) {
-            wallEnd = wallStart+i*wallDir;
+            // wallEnd = wallStart+i*wallDir;
+            wallEnd = wallStart+(i-offset)*wallDir;
             AddQuad(
                 wallStart + height*Vector3.up,
                 wallEnd + height*Vector3.up,
@@ -70,6 +87,7 @@ public class RoomMeshGenerator
                 wallEnd
             );
             wallStart = wallEnd + doorWidth*wallDir;
+            AddDoorway(wallEnd, wallStart);
         }
         wallEnd = end;
         AddQuad(
@@ -78,6 +96,15 @@ public class RoomMeshGenerator
             wallStart,
             wallEnd
         );
+    }
+
+    private void AddDoorway(Vector3 start, Vector3 end) {
+        Vector3 o = Vector3.Cross((end-start), Vector3.up).normalized*offset;
+        Vector3 h = Vector3.up*height;
+        AddQuad(start+o, end+o, start, end);
+        AddQuad(start+h, end+h, start+o+h, end+o+h);
+        AddQuad(start+h, start+o+h, start, start+o);
+        AddQuad(end+o+h, end+h, end+o, end);
     }
 
     private void AddQuad(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br) {

@@ -48,10 +48,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 5
   length: 5
-  minWidth: 3
-  maxWidth: 10
-  minLength: 3
-  maxLength: 10
+  doorWidth: 2
+  minSize: {x: 3, y: 3}
+  maxSize: {x: 10, y: 10}
   items:
   - prefab: {fileID: 996225606864533408, guid: 92f1b1e2c305361459ea446786e674ce, type: 3}
     offset: 0.5

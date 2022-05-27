@@ -6,9 +6,9 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     Mesh mesh;
-    public int width, length, doorWidth = 2;
-    [SerializeField]
-    private int minWidth = 3, maxWidth = 10, minLength = 3, maxLength = 10;
+    public int doorWidth = 2;
+    private float offset;
+    public Vector2Int size, minSize, maxSize;
     private int height = 3;
     RoomMeshGenerator meshGenerator;
     public List<RoomItem> items;
@@ -17,12 +17,12 @@ public class Room : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        meshGenerator = new RoomMeshGenerator(width, height, length, doorWidth);
+        meshGenerator = new RoomMeshGenerator(size.x, height, size.y, doorWidth, offset);
 
         // for testing only
         meshGenerator.AddDoor(1, RoomMeshGenerator.Wall.Left);
-        meshGenerator.AddDoor(length - doorWidth - 1, RoomMeshGenerator.Wall.Right);
-        
+        meshGenerator.AddDoor(size.y - doorWidth - 1, RoomMeshGenerator.Wall.Right);
+
         Build();
         GetComponent<MeshCollider>().sharedMesh = null;
         GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -40,24 +40,26 @@ public class Room : MonoBehaviour
     }
 
     void OnDrawGizmos() {
-        Gizmos.DrawWireCube(GetCenter(), new Vector3(width, height, length));
+        Gizmos.DrawWireCube(GetCenter(), new Vector3(size.x, height, size.y));
     }
 
-    public void SetRandomDimensions() {
-            width = Random.Range(minWidth, maxWidth);
-            length = Random.Range(minLength, maxLength);
+    public void SetDimensions(int width, int length, int height, float offset) {
+        this.height = height;
+        this.size.x = width;
+        this.size.y = length;
+        this.offset = offset;
     }
 
     public Vector3 GetCenter() {
         return new Vector3(
-            transform.position.x + (float)width*0.5f,
+            transform.position.x + (float)size.x*0.5f,
             transform.position.y + (float)height*0.5f,
-            transform.position.z + (float)length*0.5f
+            transform.position.z + (float)size.y*0.5f
             );
     }
 
     private IEnumerable<Vector3> GetCorners(float offset) {
-        float xOffset = width * offset * 0.5f, zOffset = length * offset * 0.5f;
+        float xOffset = size.x * offset * 0.5f, zOffset = size.y * offset * 0.5f;
         yield return new Vector3(-xOffset, 0,  zOffset);
         yield return new Vector3( xOffset, 0,  zOffset);
         yield return new Vector3(-xOffset, 0, -zOffset);

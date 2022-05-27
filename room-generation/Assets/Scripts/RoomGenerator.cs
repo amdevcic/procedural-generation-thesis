@@ -5,7 +5,9 @@ using UnityEngine;
 public class RoomGenerator : MonoBehaviour
 {
     List<Room> rooms;
-    public int totalWidth;
+    public int totalWidth, wallHeight;
+    [Range(0, 1)]
+    public float wallThickness;
     public List<GameObject> roomPrefabs;
 
     private void Awake() {
@@ -20,9 +22,16 @@ public class RoomGenerator : MonoBehaviour
                 roomPrefabs[Random.Range(0, roomPrefabs.Count)],
                 transform.position + offset,
                 Quaternion.identity) as GameObject;
+
             Room room = roomObject.GetComponent<Room>();
-            room.SetRandomDimensions();
-            offset.x += room.width;
+            room.SetDimensions(
+                Random.Range(room.minSize.x, room.maxSize.x),
+                Random.Range(room.minSize.y, room.maxSize.y),
+                wallHeight,
+                wallThickness*0.5f
+            );
+
+            offset.x += room.size.x;
             rooms.Add(room);
         }
         Destroy(rooms[rooms.Count-1].gameObject);
