@@ -33,10 +33,6 @@ public class RoomMeshGenerator
         uvs = new List<Vector2>();
 
         CreateFloorAndCeiling();
-        // CreateWall(new Vector3(0, 0, 0), new Vector3(0, 0, length), doors[(int) Wall.Left]);            // left
-        // CreateWall(new Vector3(0, 0, length), new Vector3(width, 0, length), doors[(int) Wall.Top]);    // top
-        // CreateWall(new Vector3(width, 0, length), new Vector3(width, 0, 0), doors[(int) Wall.Right]);   // right
-        // CreateWall(new Vector3(width, 0, 0), new Vector3(0, 0, 0), doors[(int) Wall.Bottom]);           // bottom
         CreateWall(new Vector3(offset, 0, offset), new Vector3(offset, 0, length-offset), doors[(int) Wall.Left]);                  // left
         CreateWall(new Vector3(offset, 0, length-offset), new Vector3(width-offset, 0, length-offset), doors[(int) Wall.Top]);      // top
         CreateWall(new Vector3(width-offset, 0, length-offset), new Vector3(width-offset, 0, offset), doors[(int) Wall.Right]);     // right
@@ -48,18 +44,6 @@ public class RoomMeshGenerator
     }
 
     private void CreateFloorAndCeiling() {
-        // AddQuad(
-        //     new Vector3(0, 0, length),
-        //     new Vector3(width, 0, length),
-        //     new Vector3(0, 0, 0),
-        //     new Vector3(width, 0, 0)
-        // );
-        // AddQuad(
-        //     new Vector3(0, height, 0),
-        //     new Vector3(width, height, 0),
-        //     new Vector3(0, height, length),
-        //     new Vector3(width, height, length)
-        // );
         AddQuad(
             new Vector3(offset, 0, length-offset),
             new Vector3(width-offset, 0, length-offset),
@@ -114,11 +98,12 @@ public class RoomMeshGenerator
         verts.Add(bl);
         verts.Add(br);
 
-        // TODO: fix uvs
-        uvs.Add(tl);
-        uvs.Add(tr);
-        uvs.Add(bl);
-        uvs.Add(br);
+        float w = (br-bl).magnitude*0.6f, h = (tl-bl).magnitude*0.6f;
+        
+        uvs.Add(new Vector2(0, 0)); // bottom left
+        uvs.Add(new Vector2(w, 0)); // top left
+        uvs.Add(new Vector2(0, h)); // bottom right
+        uvs.Add(new Vector2(w, h)); // top right
 
 
         indices.Add(n);

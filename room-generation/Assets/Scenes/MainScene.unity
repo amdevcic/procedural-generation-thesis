@@ -153,6 +153,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalWidth: 50
+  wallHeight: 3
+  wallThickness: 0.3
   roomPrefabs:
   - {fileID: 4158854987538620872, guid: 4fb7cbd50dfb8de4dbf2d426febe47fb, type: 3}
   - {fileID: 4158854987538620872, guid: b12ac38f05389794bab2b2428dba7a00, type: 3}
