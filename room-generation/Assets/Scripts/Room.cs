@@ -6,9 +6,7 @@ using UnityEngine;
 public class Room : MonoBehaviour
 {
     Mesh mesh;
-    List<Vector3> vertices;
-    List<int> triangles;
-    public int width, length;
+    public int width, length, doorWidth = 2;
     [SerializeField]
     private int minWidth = 3, maxWidth = 10, minLength = 3, maxLength = 10;
     private int height = 3;
@@ -19,7 +17,12 @@ public class Room : MonoBehaviour
     {
         mesh = new Mesh();
         GetComponent<MeshFilter>().mesh = mesh;
-        meshGenerator = new RoomMeshGenerator(width, height, length);
+        meshGenerator = new RoomMeshGenerator(width, height, length, doorWidth);
+
+        // for testing only
+        meshGenerator.AddDoor(1, RoomMeshGenerator.Wall.Left);
+        meshGenerator.AddDoor(length - doorWidth - 1, RoomMeshGenerator.Wall.Right);
+        
         Build();
         GetComponent<MeshCollider>().sharedMesh = null;
         GetComponent<MeshCollider>().sharedMesh = mesh;
@@ -28,6 +31,7 @@ public class Room : MonoBehaviour
 
     void Build()
     {
+        meshGenerator.Build();
         mesh.Clear();
         mesh.SetVertices(meshGenerator.GetVerts());
         mesh.SetTriangles(meshGenerator.GetIndices(), 0);
