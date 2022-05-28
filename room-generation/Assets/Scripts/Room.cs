@@ -9,7 +9,7 @@ public class Room : MonoBehaviour
     public int doorWidth = 2;
     private float offset;
     public Vector2Int size, minSize, maxSize;
-    private int height = 3;
+    private float height = 3f;
     RoomMeshGenerator meshGenerator;
     public List<RoomItem> items;
 
@@ -24,8 +24,6 @@ public class Room : MonoBehaviour
         meshGenerator.AddDoor(size.y - doorWidth - 1, RoomMeshGenerator.Wall.Right);
 
         Build();
-        GetComponent<MeshCollider>().sharedMesh = null;
-        GetComponent<MeshCollider>().sharedMesh = mesh;
         Populate();
     }
 
@@ -37,13 +35,16 @@ public class Room : MonoBehaviour
         mesh.SetTriangles(meshGenerator.GetIndices(), 0);
         mesh.SetUVs(0, meshGenerator.GetUvs());
         mesh.RecalculateNormals();
+        
+        GetComponent<MeshCollider>().sharedMesh = null;
+        GetComponent<MeshCollider>().sharedMesh = mesh;
     }
 
     void OnDrawGizmos() {
         Gizmos.DrawWireCube(GetCenter(), new Vector3(size.x, height, size.y));
     }
 
-    public void SetDimensions(int width, int length, int height, float offset) {
+    public void SetDimensions(int width, int length, float height, float offset) {
         this.height = height;
         this.size.x = width;
         this.size.y = length;

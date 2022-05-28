@@ -5,9 +5,10 @@ using UnityEngine;
 public class RoomGenerator : MonoBehaviour
 {
     List<Room> rooms;
-    public int totalWidth, wallHeight;
+    public int totalWidth;
     [Range(0, 1)]
     public float wallThickness;
+    public float wallHeight;
     public List<GameObject> roomPrefabs;
 
     private void Awake() {
@@ -55,5 +56,11 @@ public class RoomGenerator : MonoBehaviour
 
     public void SetTotalWidth(float width) {
         totalWidth = (int)width;
+    }
+    public void SetWallThickness(float thickness) {
+        wallThickness = thickness;
+    }
+    public void SetWallHeight(float height) {
+        wallHeight = height;
     }
 }

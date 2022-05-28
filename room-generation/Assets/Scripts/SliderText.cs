@@ -7,7 +7,7 @@ public class SliderText : MonoBehaviour
         Slider slider = GetComponentInParent<Slider>();
         Text text = GetComponent<Text>();
 
-        text.text = slider.value.ToString();
-        slider.onValueChanged.AddListener((value) => {text.text = value.ToString();});
+        text.text = slider.value.ToString("0.##");
+        slider.onValueChanged.AddListener((value) => {text.text = value.ToString("0.##");});
     }
 }

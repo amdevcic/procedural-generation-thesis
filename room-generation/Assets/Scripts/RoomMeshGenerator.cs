@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 public class RoomMeshGenerator
 { 
-    private int width, height, length, doorWidth;
-    private float offset;
+    private int width, length, doorWidth;
+    private float offset, height;
     List<Vector3> verts;
     List<int> indices;
     List<Vector2> uvs;
@@ -14,7 +14,7 @@ public class RoomMeshGenerator
         Left, Top, Right, Bottom 
     }
 
-    public RoomMeshGenerator(int width, int height, int length, int doorWidth, float offset)
+    public RoomMeshGenerator(int width, float height, int length, int doorWidth, float offset)
     {
         this.width = width;
         this.height = height;
