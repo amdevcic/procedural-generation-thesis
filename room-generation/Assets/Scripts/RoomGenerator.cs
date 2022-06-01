@@ -16,27 +16,56 @@ public class RoomGenerator : MonoBehaviour
     }
 
     public void Generate() {
-        DestroyAll();
-        Vector3 offset = Vector3.zero;
-        while (offset.x < totalWidth) {
-            GameObject roomObject = Instantiate(
-                roomPrefabs[Random.Range(0, roomPrefabs.Count)],
-                transform.position + offset,
-                Quaternion.identity) as GameObject;
+        StartCoroutine("GenerateCoroutine");
+    }
 
-            Room room = roomObject.GetComponent<Room>();
-            room.SetDimensions(
+    IEnumerator GenerateCoroutine() {
+        List<Room.Door> queue = new List<Room.Door>();
+        DestroyAll();
+        Room room = Instantiate(
+            roomPrefabs[Random.Range(0, roomPrefabs.Count)],
+            transform.position,
+            Quaternion.identity).GetComponent<Room>();
+        room.Initialize(
+            Random.Range(room.minSize.x, room.maxSize.x),
+            Random.Range(room.minSize.y, room.maxSize.y),
+            wallHeight,
+            wallThickness*0.5f
+        );
+        rooms.Add(room);
+        room.AddDoor(Random.Range(1, room.size.y-room.doorWidth), RoomMeshGenerator.Wall.Right);
+        foreach(Room.Door door in room.GetAllDoors()) {
+            queue.Add(door);
+        }
+        Room.Door currentDoor;
+        while (queue.Count>0) {
+            currentDoor = queue[0];
+            queue.RemoveAt(0);
+            room = Instantiate(
+                roomPrefabs[Random.Range(0, roomPrefabs.Count)],
+                transform.position,
+                Quaternion.identity).GetComponent<Room>();
+            room.Initialize(
                 Random.Range(room.minSize.x, room.maxSize.x),
                 Random.Range(room.minSize.y, room.maxSize.y),
                 wallHeight,
                 wallThickness*0.5f
             );
-
-            offset.x += room.size.x;
-            rooms.Add(room);
+                room.LineUpWith(currentDoor);
+            yield return new WaitForFixedUpdate();
+            if (room.GetCollisions() == 0) {
+                rooms.Add(room);
+                if (room.transform.position.x < totalWidth) {
+                    room.AddDoor(Random.Range(1, room.size.y-room.doorWidth), RoomMeshGenerator.Wall.Right);
+                    foreach(Room.Door door in room.GetAllDoors()) {
+                        queue.Add(door);
+                    }
+                }
+            } else {
+                Destroy(room.gameObject);
+            }
         }
-        Destroy(rooms[rooms.Count-1].gameObject);
-        rooms.RemoveAt(rooms.Count-1);
+        yield return null;
     }
 
     private void DestroyAll() {

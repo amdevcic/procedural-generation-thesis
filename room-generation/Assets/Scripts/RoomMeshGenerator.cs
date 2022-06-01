@@ -8,8 +8,7 @@ public class RoomMeshGenerator
     List<Vector3> verts;
     List<int> indices;
     List<Vector2> uvs;
-    // private float textureScaleFactor = 0.25f;
-    private List<int>[] doors = new List<int>[4];
+    private float textureScaleFactor = 0.6f;
     public enum Wall {
         Left, Top, Right, Bottom 
     }
@@ -22,28 +21,67 @@ public class RoomMeshGenerator
         this.doorWidth = doorWidth;
         this.offset = offset;
         
-        for (int i=0; i<4; i++) {
-            doors[i] = new List<int>();
-        }
     }
 
-    public void Build() {
+    public void Clear() {
         verts = new List<Vector3>();
         indices = new List<int>();
         uvs = new List<Vector2>();
-
-        CreateFloorAndCeiling();
-        CreateWall(new Vector3(offset, 0, offset), new Vector3(offset, 0, length-offset), doors[(int) Wall.Left]);                  // left
-        CreateWall(new Vector3(offset, 0, length-offset), new Vector3(width-offset, 0, length-offset), doors[(int) Wall.Top]);      // top
-        CreateWall(new Vector3(width-offset, 0, length-offset), new Vector3(width-offset, 0, offset), doors[(int) Wall.Right]);     // right
-        CreateWall(new Vector3(width-offset, 0, offset), new Vector3(offset, 0, offset), doors[(int) Wall.Bottom]);                 // bottom
     }
 
-    public void AddDoor(int position, Wall wall) {
-        doors[(int) wall].Add(position);
+
+    public bool CheckIfPositionValid(int position, Wall wall, bool isDoor) {
+        if (isDoor)
+            return position>=0 && position+doorWidth<=GetWallWidth(wall);
+        else
+            return position>=0 && position<GetWallWidth(wall);
     }
 
-    private void CreateFloorAndCeiling() {
+    public int GetWallWidth(Wall wall) {
+        switch(wall) {
+            case Wall.Left:
+            case Wall.Right:
+                return length;
+            case Wall.Top:
+            case Wall.Bottom:
+                return width;
+            default:
+                return 0;
+        }
+    }
+
+    //returns clockwise direction of wall
+    public Vector3 getWallDir(Wall wall) {
+        switch(wall) {
+            case Wall.Left:
+                return Vector3.forward;
+            case Wall.Top:
+                return Vector3.right;
+            case Wall.Right:
+                return Vector3.back;
+            case Wall.Bottom:
+                return Vector3.left;
+            default:
+                return Vector3.zero;
+        }
+    } 
+
+    public Wall GetOppositeWall (Wall wall) {
+        switch(wall) {
+            case Wall.Left:
+                return Wall.Right;
+            case Wall.Top:
+                return Wall.Bottom;
+            case Wall.Right:
+                return Wall.Left;
+            case Wall.Bottom:
+                return Wall.Top;
+            default:
+                return Wall.Right;
+        }
+    }
+
+    public void CreateFloorAndCeiling() {
         AddQuad(
             new Vector3(offset, 0, length-offset),
             new Vector3(width-offset, 0, length-offset),
@@ -57,12 +95,11 @@ public class RoomMeshGenerator
             new Vector3(width-offset, height, length-offset)
         );
     }
-    private void CreateWall(Vector3 start, Vector3 end, List<int> doorPos) {
+    public void CreateWall(Vector3 start, Vector3 end, List<int> doorPos) {
         float wallLength = (end-start).magnitude;
         Vector3 wallDir = (end-start).normalized;
         Vector3 wallStart = start, wallEnd = start;
         foreach (int i in doorPos) {
-            // wallEnd = wallStart+i*wallDir;
             wallEnd = wallStart+(i-offset)*wallDir;
             AddQuad(
                 wallStart + height*Vector3.up,
@@ -71,7 +108,7 @@ public class RoomMeshGenerator
                 wallEnd
             );
             wallStart = wallEnd + doorWidth*wallDir;
-            AddDoorway(wallEnd, wallStart);
+            CreateDoorway(wallEnd, wallStart);
         }
         wallEnd = end;
         AddQuad(
@@ -82,7 +119,7 @@ public class RoomMeshGenerator
         );
     }
 
-    private void AddDoorway(Vector3 start, Vector3 end) {
+    private void CreateDoorway(Vector3 start, Vector3 end) {
         Vector3 o = Vector3.Cross((end-start), Vector3.up).normalized*offset;
         Vector3 h = Vector3.up*height;
         AddQuad(start+o, end+o, start, end);
@@ -98,7 +135,7 @@ public class RoomMeshGenerator
         verts.Add(bl);
         verts.Add(br);
 
-        float w = (br-bl).magnitude*0.6f, h = (tl-bl).magnitude*0.6f;
+        float w = (br-bl).magnitude*textureScaleFactor, h = (tl-bl).magnitude*textureScaleFactor;
         
         uvs.Add(new Vector2(0, 0)); // bottom left
         uvs.Add(new Vector2(w, 0)); // top left
@@ -123,4 +160,5 @@ public class RoomMeshGenerator
     public List<Vector2> GetUvs() {
         return uvs;
     }
+
 }

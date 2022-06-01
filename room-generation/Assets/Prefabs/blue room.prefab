@@ -46,10 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da8f08b8aa3ff9e4697dae60bbb79ac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 5
-  length: 5
   doorWidth: 2
-  minSize: {x: 3, y: 3}
+  size: {x: 0, y: 0}
+  minSize: {x: 4, y: 4}
   maxSize: {x: 10, y: 10}
   items:
   - prefab: {fileID: 1769101137869485042, guid: 3589fe145026e114c8cba6b904edaee0, type: 3}
