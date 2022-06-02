@@ -6,6 +6,7 @@ public class RoomGenerator : MonoBehaviour
 {
     List<Room> rooms;
     public int totalWidth;
+    public int totalLength;
     [Range(0, 1)]
     public float wallThickness;
     public float wallHeight;
@@ -32,6 +33,7 @@ public class RoomGenerator : MonoBehaviour
             wallHeight,
             wallThickness*0.5f
         );
+        room.transform.position += 10*Vector3.forward;
         rooms.Add(room);
         room.AddDoor(Random.Range(1, room.size.y-room.doorWidth), RoomMeshGenerator.Wall.Right);
         foreach(Room.Door door in room.GetAllDoors()) {
@@ -53,15 +55,17 @@ public class RoomGenerator : MonoBehaviour
             );
                 room.LineUpWith(currentDoor);
             yield return new WaitForFixedUpdate();
-            if (room.GetCollisions() == 0) {
+            if (room.GetCollisions() == 0 && IsWithinBounds(room)) {
                 rooms.Add(room);
-                if (room.transform.position.x < totalWidth) {
-                    room.AddDoor(Random.Range(1, room.size.y-room.doorWidth), RoomMeshGenerator.Wall.Right);
-                    foreach(Room.Door door in room.GetAllDoors()) {
-                        queue.Add(door);
+                // if (IsWithinBounds(room)) {
+                    for (int i=0; i<room.maxBranches; i++) {
+                        Room.Door newDoor = AddRandomDoorToRoom(room);
+                        if (newDoor.parent != null)
+                            queue.Add(newDoor);
                     }
-                }
+                // }
             } else {
+                currentDoor.parent.RemoveDoor(currentDoor);
                 Destroy(room.gameObject);
             }
         }
@@ -83,8 +87,24 @@ public class RoomGenerator : MonoBehaviour
             return Vector3.zero;
     }
 
+    Room.Door AddRandomDoorToRoom(Room room) {
+        int wall = Random.Range(0, 4);
+        return room.AddDoor(Random.Range(1, room.meshGenerator.GetWallWidth((RoomMeshGenerator.Wall)wall)-room.doorWidth), (RoomMeshGenerator.Wall)wall);
+    }
+
+    bool IsWithinBounds(Room room) {
+        Vector3 position = room.transform.position;
+        return position.x >= 0 &&
+            position.x + room.size.x < totalWidth &&
+            position.z >= 0 &&
+            position.z + room.size.y < totalLength;
+    }
+
     public void SetTotalWidth(float width) {
         totalWidth = (int)width;
+    }
+    public void SetTotalLength(float length) {
+        totalLength = (int)length;
     }
     public void SetWallThickness(float thickness) {
         wallThickness = thickness;

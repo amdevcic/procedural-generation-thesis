@@ -30,9 +30,18 @@ public class RoomMeshGenerator
     }
 
 
-    public bool CheckIfPositionValid(int position, Wall wall, bool isDoor) {
-        if (isDoor)
+    public bool CheckIfPositionValid(int position, Wall wall, List<int> doors) {
+        // Debug.Log($"{position}, {wall}, {GetWallWidth(wall)}");
+        if (doors != null) {
+            foreach (int p in doors) {
+                if ( p>=position && p<=position+doorWidth
+                  || position>=p && position<=p+doorWidth){
+                  Debug.Log("collides with door");
+                  return false;
+                  }
+            }
             return position>=0 && position+doorWidth<=GetWallWidth(wall);
+            }
         else
             return position>=0 && position<GetWallWidth(wall);
     }
@@ -100,7 +109,9 @@ public class RoomMeshGenerator
         Vector3 wallDir = (end-start).normalized;
         Vector3 wallStart = start, wallEnd = start;
         foreach (int i in doorPos) {
-            wallEnd = wallStart+(i-offset)*wallDir;
+            // wallEnd = wallStart+(i-offset)*wallDir;
+            wallEnd = start+(i-offset)*wallDir;
+            // Debug.Log($"{wallStart} to {wallEnd}");
             AddQuad(
                 wallStart + height*Vector3.up,
                 wallEnd + height*Vector3.up,

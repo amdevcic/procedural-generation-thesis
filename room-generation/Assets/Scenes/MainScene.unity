@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   totalWidth: 50
+  totalLength: 50
   wallThickness: 0.3
   wallHeight: 3
   roomPrefabs:

@@ -20,6 +20,7 @@ public class Room : MonoBehaviour
     public List<int>[] doors = new List<int>[4];
     Mesh mesh;
     public int doorWidth = 1;
+    public int maxBranches = 3;
     private float offset;
     public Vector2Int size, minSize, maxSize;
     private float height = 3f;
@@ -105,7 +106,7 @@ public class Room : MonoBehaviour
     }
 
     public Door AddDoor(int position, RoomMeshGenerator.Wall wall) {
-        if (meshGenerator.CheckIfPositionValid(position, wall, true)) {
+        if (meshGenerator.CheckIfPositionValid(position, wall, doors[(int)wall])) {
             doors[(int) wall].Add(position);
             Rebuild();
             return new Door(position, wall, this);
@@ -154,7 +155,8 @@ public class Room : MonoBehaviour
 
     public void LineUpWith(Door door) {
         Room parent = door.parent;
-        Door newDoor = AddDoor(Random.Range(1, size.y-doorWidth), meshGenerator.GetOppositeWall(door.wall));
+        RoomMeshGenerator.Wall opposite = meshGenerator.GetOppositeWall(door.wall);
+        Door newDoor = AddDoor(Random.Range(1, meshGenerator.GetWallWidth(opposite)-doorWidth), opposite);
         transform.position = parent.transform.position + parent.GetVectorToDoor(door) - GetVectorToDoor(newDoor) - meshGenerator.getWallDir(newDoor.wall)*doorWidth;
     }
 
