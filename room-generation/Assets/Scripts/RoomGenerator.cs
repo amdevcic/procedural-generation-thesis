@@ -12,16 +12,20 @@ public class RoomGenerator : MonoBehaviour
     public float wallHeight;
     public List<GameObject> roomPrefabs;
     private Bounds bounds;
+    Camera mapCamera;
 
     private void Awake() {
         rooms = new List<Room>();
+        mapCamera = GetComponentInChildren<Camera>();
     }
 
     public void Generate() {
+        mapCamera.orthographicSize = Mathf.Max(totalLength, totalWidth)/2;
         StartCoroutine("GenerateCoroutine");
     }
 
     IEnumerator GenerateCoroutine() {
+        bounds = new Bounds();
         List<Room.Door> queue = new List<Room.Door>();
         DestroyAll();
         Room room = Instantiate(
@@ -69,6 +73,7 @@ public class RoomGenerator : MonoBehaviour
                 currentDoor.parent.RemoveDoor(currentDoor);
                 Destroy(room.gameObject);
             }
+            mapCamera.transform.position = bounds.center;
         }
         yield return null;
     }
