@@ -39,7 +39,6 @@ public class RoomMeshGenerator
             foreach (int p in doors) {
                 if ( p>=position && p<=position+doorWidth
                   || position>=p && position<=p+doorWidth){
-                  Debug.Log("collides with door");
                   return false;
                   }
             }

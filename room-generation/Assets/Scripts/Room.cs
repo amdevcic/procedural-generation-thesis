@@ -113,7 +113,7 @@ public class Room : MonoBehaviour
             return new Door(0, 0, null);
     }
 
-    private IEnumerable<Vector3> GetCorners(float offset) {
+    public IEnumerable<Vector3> GetCorners(float offset) {
         float xOffset = size.x * offset * 0.5f, zOffset = size.y * offset * 0.5f;
         yield return new Vector3(-xOffset, 0,  zOffset);
         yield return new Vector3( xOffset, 0,  zOffset);
