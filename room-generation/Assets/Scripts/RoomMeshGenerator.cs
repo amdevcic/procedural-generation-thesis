@@ -8,6 +8,9 @@ public class RoomMeshGenerator
     List<Vector3> verts;
     List<int> indices;
     List<Vector2> uvs;
+    
+    List<int> floorindices;
+
     private float textureScaleFactor = 0.6f;
     public enum Wall {
         Left, Top, Right, Bottom 
@@ -27,11 +30,11 @@ public class RoomMeshGenerator
         verts = new List<Vector3>();
         indices = new List<int>();
         uvs = new List<Vector2>();
+        floorindices = new List<int>();
     }
 
 
     public bool CheckIfPositionValid(int position, Wall wall, List<int> doors) {
-        // Debug.Log($"{position}, {wall}, {GetWallWidth(wall)}");
         if (doors != null) {
             foreach (int p in doors) {
                 if ( p>=position && p<=position+doorWidth
@@ -91,7 +94,7 @@ public class RoomMeshGenerator
     }
 
     public void CreateFloorAndCeiling() {
-        AddQuad(
+        AddFloorQuad(
             new Vector3(offset, 0, length-offset),
             new Vector3(width-offset, 0, length-offset),
             new Vector3(offset, 0, offset),
@@ -109,9 +112,7 @@ public class RoomMeshGenerator
         Vector3 wallDir = (end-start).normalized;
         Vector3 wallStart = start, wallEnd = start;
         foreach (int i in doorPos) {
-            // wallEnd = wallStart+(i-offset)*wallDir;
             wallEnd = start+(i-offset)*wallDir;
-            // Debug.Log($"{wallStart} to {wallEnd}");
             AddQuad(
                 wallStart + height*Vector3.up,
                 wallEnd + height*Vector3.up,
@@ -133,13 +134,21 @@ public class RoomMeshGenerator
     private void CreateDoorway(Vector3 start, Vector3 end) {
         Vector3 o = Vector3.Cross((end-start), Vector3.up).normalized*offset;
         Vector3 h = Vector3.up*height;
-        AddQuad(start+o, end+o, start, end);
+        AddFloorQuad(start+o, end+o, start, end);
         AddQuad(start+h, end+h, start+o+h, end+o+h);
         AddQuad(start+h, start+o+h, start, start+o);
         AddQuad(end+o+h, end+h, end+o, end);
     }
 
     private void AddQuad(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br) {
+        AddQuad(tl, tr, bl, br, verts, indices, uvs);
+    }
+
+    private void AddFloorQuad(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br) {
+        AddQuad(tl, tr, bl, br, verts, floorindices, uvs);
+    }
+
+    private void AddQuad(Vector3 tl, Vector3 tr, Vector3 bl, Vector3 br, List<Vector3> verts, List<int> indices, List<Vector2> uvs) {
         int n = verts.Count;
         verts.Add(tl);
         verts.Add(tr);
@@ -162,14 +171,14 @@ public class RoomMeshGenerator
         indices.Add(n+2);
     }
 
-    public List<Vector3> GetVerts() {
-        return verts;
-    }
-    public List<int> GetIndices() {
-        return indices;
-    }
-    public List<Vector2> GetUvs() {
-        return uvs;
+    public Mesh getMesh() {
+        Mesh m = new Mesh();
+        m.subMeshCount = 2;
+        m.SetVertices(verts);
+        m.SetTriangles(indices, 0);
+        m.SetTriangles(floorindices, 1);
+        m.SetUVs(0, uvs);
+        return m;
     }
 
 }

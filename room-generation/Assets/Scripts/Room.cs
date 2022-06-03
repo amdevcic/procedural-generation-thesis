@@ -54,13 +54,13 @@ public class Room : MonoBehaviour
         meshGenerator.CreateWall(new Vector3(size.x-offset, 0, offset), new Vector3(offset, 0, offset), doors[(int) RoomMeshGenerator.Wall.Bottom]);                 // bottom
 
         mesh.Clear();
-        mesh.SetVertices(meshGenerator.GetVerts());
-        mesh.SetTriangles(meshGenerator.GetIndices(), 0);
-        mesh.SetUVs(0, meshGenerator.GetUvs());
+        mesh = meshGenerator.getMesh();
         mesh.RecalculateNormals();
         
         GetComponent<MeshCollider>().sharedMesh = null;
         GetComponent<MeshCollider>().sharedMesh = mesh;
+
+        GetComponent<MeshFilter>().mesh = mesh;
 
         GetComponent<BoxCollider>().center = GetCenter()-transform.position;
         GetComponent<BoxCollider>().size = new Vector3(size.x-offset*2, height, size.y-offset*2);
@@ -74,7 +74,6 @@ public class Room : MonoBehaviour
     public void Initialize(int width, int length, float height, float offset) {
         
         mesh = new Mesh();
-        GetComponent<MeshFilter>().mesh = mesh;
 
         this.size.x = width;
         this.size.y = length;
