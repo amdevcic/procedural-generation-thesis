@@ -6,7 +6,7 @@ public class RoomItem {
 
     public enum Position
     {
-        Corners, Center
+        Corners, Center, Walls
     }
 
     public GameObject prefab;
@@ -14,4 +14,7 @@ public class RoomItem {
     [Range(0f, 1f)]
     public float offset;
     public Position pos;
+    public bool yStretch;
+    [Range(0.01f, 1f)]
+    public float frequency;
 }

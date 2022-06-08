@@ -75,6 +75,9 @@ public class RoomGenerator : MonoBehaviour
             }
             mapCamera.transform.position = bounds.center;
         }
+        foreach (Room r in rooms) {
+            r.Populate();
+        }
         yield return null;
     }
 

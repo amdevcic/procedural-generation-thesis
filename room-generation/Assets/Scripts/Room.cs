@@ -93,7 +93,7 @@ public class Room : MonoBehaviour
         corners = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 0, length), new Vector3(width, 0, length), new Vector3(width, 0, 0)};
 
         Rebuild();
-        Populate();
+        // Populate();
     }
 
     public Vector3 GetCenter() {
@@ -105,7 +105,7 @@ public class Room : MonoBehaviour
     }
 
     public Door AddDoor(int position, RoomMeshGenerator.Wall wall) {
-        if (meshGenerator.CheckIfPositionValid(position, wall, doors[(int)wall])) {
+        if (meshGenerator.CheckIfPositionValid(position, wall, doors[(int)wall], true)) {
             doors[(int) wall].Add(position);
             Rebuild();
             return new Door(position, wall, this);
@@ -122,17 +122,34 @@ public class Room : MonoBehaviour
         yield break;
     }
 
-    void Populate() {
-        Vector3 center = GetCenter();
+    public void Populate() {
+        Vector3 center = GetCenter() + height*0.5f*Vector3.down;
         foreach (RoomItem item in items)
         {
+            if (item.yStretch) {
+                item.prefab.transform.localScale = new Vector3(1, height, 1);
+            }
             switch (item.pos) {
                 case RoomItem.Position.Corners:
                     foreach (Vector3 corner in GetCorners(item.offset))
                         Instantiate(item.prefab, center + corner, Quaternion.identity, gameObject.transform);
                     break;
                 case RoomItem.Position.Center:
-                    Instantiate(item.prefab, center, Quaternion.identity, gameObject.transform);
+                    Instantiate(item.prefab, center+height*item.offset*Vector3.up, Quaternion.identity, gameObject.transform);
+                    break;
+                case RoomItem.Position.Walls:
+                    for (int i=0; i<4; i++) {
+                        for (int j=1; j<meshGenerator.GetWallWidth(i); j += (int) (1/item.frequency)) {
+                            Vector3 walldir = meshGenerator.getWallDir((RoomMeshGenerator.Wall)i);
+                            Vector3 wallnormal = Vector3.Cross(walldir, Vector3.down);
+                            if (meshGenerator.CheckIfPositionValid(j, (RoomMeshGenerator.Wall)i, doors[i], false)) {
+                                Instantiate(item.prefab, 
+                                transform.position + corners[i] + j*walldir + height*item.offset*Vector3.up
+                                + wallnormal*offset,
+                                Quaternion.LookRotation(wallnormal, Vector3.up), gameObject.transform);
+                            }
+                        }
+                    }
                     break;
             }
         }

@@ -34,8 +34,8 @@ public class RoomMeshGenerator
     }
 
 
-    public bool CheckIfPositionValid(int position, Wall wall, List<int> doors) {
-        if (doors != null) {
+    public bool CheckIfPositionValid(int position, Wall wall, List<int> doors, bool isDoor) {
+        if (isDoor) {
             foreach (int p in doors) {
                 if ( p>=position && p<=position+doorWidth
                   || position>=p && position<=p+doorWidth){
@@ -44,8 +44,18 @@ public class RoomMeshGenerator
             }
             return position>=0 && position+doorWidth<=GetWallWidth(wall);
             }
-        else
+        else {
+            foreach (int p in doors) {
+                if ( position>=p && position<=p+doorWidth){
+                  return false;
+                  }
+            }
             return position>=0 && position<GetWallWidth(wall);
+            }
+    }
+
+    public int GetWallWidth(int wall) {
+        return GetWallWidth((Wall) wall);
     }
 
     public int GetWallWidth(Wall wall) {
