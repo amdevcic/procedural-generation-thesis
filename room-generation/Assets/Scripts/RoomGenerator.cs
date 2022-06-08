@@ -11,14 +11,17 @@ public class RoomGenerator : MonoBehaviour
     public float wallThickness;
     public float wallHeight;
     public int attempts;
-    public List<GameObject> roomPrefabs;
+    public List<RoomData> roomTypes;
     private Bounds bounds;
     private bool bfs = true;
     Camera mapCamera;
+    GameObject baseRoom;
 
     private void Awake() {
         rooms = new List<Room>();
         mapCamera = GetComponentInChildren<Camera>();
+        baseRoom = new GameObject("Room");
+        baseRoom.AddComponent<Room>();
     }
 
     public void Generate() {
@@ -30,19 +33,20 @@ public class RoomGenerator : MonoBehaviour
         bounds = new Bounds();
         List<Room.Door> queue = new List<Room.Door>();
         DestroyAll();
+        RoomData data = roomTypes[Random.Range(0, roomTypes.Count)];
         Room room = Instantiate(
-            roomPrefabs[Random.Range(0, roomPrefabs.Count)],
+            baseRoom,
             transform.position,
             Quaternion.identity).GetComponent<Room>();
         room.Initialize(
-            Random.Range(room.minSize.x, room.maxSize.x),
-            Random.Range(room.minSize.y, room.maxSize.y),
+            Random.Range(data.minSize.x, data.maxSize.x),
+            Random.Range(data.minSize.y, data.maxSize.y),
             wallHeight,
-            wallThickness*0.5f
+            wallThickness*0.5f,
+            data
         );
-        room.transform.position += 10*Vector3.forward;
         rooms.Add(room);
-        room.AddDoor(Random.Range(1, room.size.y-room.doorWidth), RoomMeshGenerator.Wall.Right);
+        AddRandomDoorToRoom(room);
         bounds = UpdateBounds(room);
         foreach(Room.Door door in room.GetAllDoors()) {
             queue.Add(door);
@@ -52,22 +56,24 @@ public class RoomGenerator : MonoBehaviour
             currentDoor = PopDoor(queue);
             bool success = false;
             for (int i=0; i<attempts; i++) {
+                data = roomTypes[Random.Range(0, roomTypes.Count)];
                 room = Instantiate(
-                    roomPrefabs[Random.Range(0, roomPrefabs.Count)],
+                    baseRoom,
                     transform.position,
                     Quaternion.identity).GetComponent<Room>();
                 room.Initialize(
-                    Random.Range(room.minSize.x, room.maxSize.x),
-                    Random.Range(room.minSize.y, room.maxSize.y),
+                    Random.Range(data.minSize.x, data.maxSize.x),
+                    Random.Range(data.minSize.y, data.maxSize.y),
                     wallHeight,
-                    wallThickness*0.5f
+                    wallThickness*0.5f,
+                    data
                 );
                 room.LineUpWith(currentDoor);
                 yield return new WaitForFixedUpdate();
                 if (room.GetCollisions() == 0 && IsWithinBounds(room)) {
                     rooms.Add(room);
                     bounds = UpdateBounds(room);
-                    for (int j=0; j<room.maxBranches; j++) {
+                    for (int j=0; j<data.maxBranches; j++) {
                         Room.Door newDoor = AddRandomDoorToRoom(room);
                         if (newDoor.parent != null)
                             queue.Add(newDoor);

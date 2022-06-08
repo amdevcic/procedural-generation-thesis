@@ -19,15 +19,14 @@ public class Room : MonoBehaviour
     
     public List<int>[] doors = new List<int>[4];
     Mesh mesh;
-    public int doorWidth = 1;
-    public int maxBranches = 3;
+    public int doorWidth = 2;
     private float offset;
-    public Vector2Int size, minSize, maxSize;
+    public Vector2Int size;
     private float height = 3f;
     public RoomMeshGenerator meshGenerator;
-    public List<RoomItem> items;
     int collisions = 0;
     Vector3[] corners = new Vector3[4];
+    public RoomData data;
 
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.layer == 6)
@@ -71,7 +70,7 @@ public class Room : MonoBehaviour
         Gizmos.DrawWireCube(GetCenter(), new Vector3(size.x, height, size.y));
     }
 
-    public void Initialize(int width, int length, float height, float offset) {
+    public void Initialize(int width, int length, float height, float offset, RoomData data) {
         
         mesh = new Mesh();
 
@@ -79,6 +78,7 @@ public class Room : MonoBehaviour
         this.size.y = length;
         this.offset = offset;
         this.height = height;
+        this.data = data;
         
         for (int i=0; i<4; i++) {
             doors[i] = new List<int>();
@@ -89,11 +89,13 @@ public class Room : MonoBehaviour
         GetComponent<Rigidbody>().useGravity = false;
         GetComponent<Rigidbody>().isKinematic = true;
 
+        Material[] mats = {data.wallMaterial, data.floorMaterial};
+        GetComponent<MeshRenderer>().sharedMaterials = mats;
+
         gameObject.layer = 6;
         corners = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 0, length), new Vector3(width, 0, length), new Vector3(width, 0, 0)};
 
         Rebuild();
-        // Populate();
     }
 
     public Vector3 GetCenter() {
@@ -124,7 +126,7 @@ public class Room : MonoBehaviour
 
     public void Populate() {
         Vector3 center = GetCenter() + height*0.5f*Vector3.down;
-        foreach (RoomItem item in items)
+        foreach (RoomItem item in data.items)
         {
             if (item.yStretch) {
                 item.prefab.transform.localScale = new Vector3(1, height, 1);
