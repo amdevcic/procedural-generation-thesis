@@ -13,6 +13,7 @@ public class RoomGenerator : MonoBehaviour
     public int attempts;
     public List<GameObject> roomPrefabs;
     private Bounds bounds;
+    private bool bfs = true;
     Camera mapCamera;
 
     private void Awake() {
@@ -48,8 +49,7 @@ public class RoomGenerator : MonoBehaviour
         }
         Room.Door currentDoor;
         while (queue.Count>0) {
-            currentDoor = queue[0];
-            queue.RemoveAt(0);
+            currentDoor = PopDoor(queue);
             bool success = false;
             for (int i=0; i<attempts; i++) {
                 room = Instantiate(
@@ -86,6 +86,19 @@ public class RoomGenerator : MonoBehaviour
             r.Populate();
         }
         yield return null;
+    }
+
+    private Room.Door PopDoor(List<Room.Door> queue) {
+        Room.Door door;
+        if (bfs) {
+            door = queue[0];
+            queue.RemoveAt(0);
+        }
+        else {
+            door = queue[queue.Count-1];
+            queue.RemoveAt(queue.Count-1);
+        }
+        return door;
     }
 
     private void DestroyAll() {
@@ -135,5 +148,9 @@ public class RoomGenerator : MonoBehaviour
     }
     public void SetAttempts(float attempts) {
         this.attempts = (int)attempts;
+    }
+
+    public void SetSearchType(bool bfs) {
+        this.bfs = bfs;
     }
 }
