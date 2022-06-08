@@ -10,6 +10,7 @@ public class RoomGenerator : MonoBehaviour
     [Range(0, 1)]
     public float wallThickness;
     public float wallHeight;
+    public int attempts;
     public List<GameObject> roomPrefabs;
     private Bounds bounds;
     Camera mapCamera;
@@ -49,30 +50,36 @@ public class RoomGenerator : MonoBehaviour
         while (queue.Count>0) {
             currentDoor = queue[0];
             queue.RemoveAt(0);
-            room = Instantiate(
-                roomPrefabs[Random.Range(0, roomPrefabs.Count)],
-                transform.position,
-                Quaternion.identity).GetComponent<Room>();
-            room.Initialize(
-                Random.Range(room.minSize.x, room.maxSize.x),
-                Random.Range(room.minSize.y, room.maxSize.y),
-                wallHeight,
-                wallThickness*0.5f
-            );
+            bool success = false;
+            for (int i=0; i<attempts; i++) {
+                room = Instantiate(
+                    roomPrefabs[Random.Range(0, roomPrefabs.Count)],
+                    transform.position,
+                    Quaternion.identity).GetComponent<Room>();
+                room.Initialize(
+                    Random.Range(room.minSize.x, room.maxSize.x),
+                    Random.Range(room.minSize.y, room.maxSize.y),
+                    wallHeight,
+                    wallThickness*0.5f
+                );
                 room.LineUpWith(currentDoor);
-            yield return new WaitForFixedUpdate();
-            if (room.GetCollisions() == 0 && IsWithinBounds(room)) {
-                rooms.Add(room);
-                bounds = UpdateBounds(room);
-                for (int i=0; i<room.maxBranches; i++) {
-                    Room.Door newDoor = AddRandomDoorToRoom(room);
-                    if (newDoor.parent != null)
-                        queue.Add(newDoor);
+                yield return new WaitForFixedUpdate();
+                if (room.GetCollisions() == 0 && IsWithinBounds(room)) {
+                    rooms.Add(room);
+                    bounds = UpdateBounds(room);
+                    for (int j=0; j<room.maxBranches; j++) {
+                        Room.Door newDoor = AddRandomDoorToRoom(room);
+                        if (newDoor.parent != null)
+                            queue.Add(newDoor);
                     }
-            } else {
-                currentDoor.parent.RemoveDoor(currentDoor);
-                Destroy(room.gameObject);
+                    success = true;
+                    break;
+                } else {
+                    Destroy(room.gameObject);
+                }
             }
+            if (!success)
+                currentDoor.parent.RemoveDoor(currentDoor);
             mapCamera.transform.position = bounds.center;
         }
         foreach (Room r in rooms) {
@@ -125,5 +132,8 @@ public class RoomGenerator : MonoBehaviour
     }
     public void SetWallHeight(float height) {
         wallHeight = height;
+    }
+    public void SetAttempts(float attempts) {
+        this.attempts = (int)attempts;
     }
 }
