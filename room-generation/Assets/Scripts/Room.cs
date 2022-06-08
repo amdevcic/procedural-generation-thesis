@@ -151,6 +151,14 @@ public class Room : MonoBehaviour
                         }
                     }
                     break;
+                case RoomItem.Position.Random:
+                    Vector3 pos = new Vector3(
+                        Random.Range(1, meshGenerator.GetWallWidth(1)),
+                        height*item.offset,
+                        Random.Range(1, meshGenerator.GetWallWidth(0))
+                    );
+                    Instantiate(item.prefab, transform.position + pos, Quaternion.Euler(0, Random.Range(0, 360), 0), gameObject.transform);
+                    break;
             }
         }
     }

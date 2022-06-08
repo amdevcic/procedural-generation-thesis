@@ -6,7 +6,7 @@ public class RoomItem {
 
     public enum Position
     {
-        Corners, Center, Walls
+        Corners, Center, Walls, Random
     }
 
     public GameObject prefab;
