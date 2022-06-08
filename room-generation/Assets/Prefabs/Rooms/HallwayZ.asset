@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c47735a1b9e41f4489f554185f244124, type: 3}
   m_Name: HallwayZ
   m_EditorClassIdentifier: 
-  items: []
+  items:
+  - prefab: {fileID: 225406674375079037, guid: 6851e6bb203c32f4db4205d5a2028c45, type: 3}
+    offset: 0.5
+    pos: 2
+    yStretch: 0
+    frequency: 0.33
   maxBranches: 3
-  minSize: {x: 0, y: 0}
-  maxSize: {x: 0, y: 0}
-  wallMaterial: {fileID: 0}
-  floorMaterial: {fileID: 0}
+  minSize: {x: 4, y: 5}
+  maxSize: {x: 4, y: 15}
+  wallMaterial: {fileID: 2100000, guid: e429c8ff9e485574b8aa09ee44b4da19, type: 2}
+  floorMaterial: {fileID: 2100000, guid: ca5f9003d85586d4d96ea25bf9f6bb44, type: 2}

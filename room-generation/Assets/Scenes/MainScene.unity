@@ -157,9 +157,10 @@ MonoBehaviour:
   wallThickness: 0.3
   wallHeight: 3
   attempts: 1
-  roomPrefabs:
-  - {fileID: 4158854987538620872, guid: 4fb7cbd50dfb8de4dbf2d426febe47fb, type: 3}
-  - {fileID: 4158854987538620872, guid: b12ac38f05389794bab2b2428dba7a00, type: 3}
+  roomTypes:
+  - {fileID: 11400000, guid: e1808a833f154594e945e89009991d63, type: 2}
+  - {fileID: 11400000, guid: 5d3e7ce75ff3a344eb9db7bdb6c39453, type: 2}
+  - {fileID: 11400000, guid: 1e2faf43dae866b41ac1e8214269ac62, type: 2}
 --- !u!4 &8657444
 Transform:
   m_ObjectHideFlags: 0
