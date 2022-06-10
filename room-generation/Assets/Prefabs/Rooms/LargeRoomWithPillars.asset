@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c47735a1b9e41f4489f554185f244124, type: 3}
+  m_Name: LargeRoomWithPillars
+  m_EditorClassIdentifier: 
+  items:
+  - prefab: {fileID: 996225606864533408, guid: 92f1b1e2c305361459ea446786e674ce, type: 3}
+    offset: 0.9
+    pos: 0
+    yStretch: 1
+    frequency: 0
+  - prefab: {fileID: 996225606864533408, guid: 92f1b1e2c305361459ea446786e674ce, type: 3}
+    offset: 0.3
+    pos: 0
+    yStretch: 1
+    frequency: 0
+  - prefab: {fileID: 1769101137869485042, guid: 3589fe145026e114c8cba6b904edaee0, type: 3}
+    offset: 0.5
+    pos: 1
+    yStretch: 0
+    frequency: 0
+  maxBranches: 6
+  minSize: {x: 7, y: 7}
+  maxSize: {x: 12, y: 12}
+  wallMaterial: {fileID: 2100000, guid: 57affabf9cc8f1443a25f2ff280d83a8, type: 2}
+  floorMaterial: {fileID: 2100000, guid: ca5f9003d85586d4d96ea25bf9f6bb44, type: 2}

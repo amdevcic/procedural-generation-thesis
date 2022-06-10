@@ -28,7 +28,7 @@ public class RoomGenerator : MonoBehaviour
     }
 
     public void Generate() {
-        mapCamera.orthographicSize = Mathf.Max(totalLength, totalWidth)/2;
+        mapCamera.orthographicSize = Mathf.Max(totalLength, totalWidth)/2+5;
         StartCoroutine("GenerateCoroutine");
     }
 
