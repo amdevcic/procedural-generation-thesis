@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RoomGenerator : MonoBehaviour
 {
@@ -16,6 +17,8 @@ public class RoomGenerator : MonoBehaviour
     private bool bfs = true;
     Camera mapCamera;
     GameObject baseRoom;
+    public Text timeElapsedText;
+    float timeElapsed;
 
     private void Awake() {
         rooms = new List<Room>();
@@ -30,6 +33,7 @@ public class RoomGenerator : MonoBehaviour
     }
 
     IEnumerator GenerateCoroutine() {
+        timeElapsed = Time.time;
         bounds = new Bounds();
         List<Room.Door> queue = new List<Room.Door>();
         DestroyAll();
@@ -91,6 +95,8 @@ public class RoomGenerator : MonoBehaviour
         foreach (Room r in rooms) {
             r.Populate();
         }
+        timeElapsed = Time.time - timeElapsed;
+        timeElapsedText.text = "Time taken: "+timeElapsed.ToString("0.00")+" seconds";
         yield return null;
     }
 
