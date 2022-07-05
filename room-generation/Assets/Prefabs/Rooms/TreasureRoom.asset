@@ -13,11 +13,6 @@ MonoBehaviour:
   m_Name: TreasureRoom
   m_EditorClassIdentifier: 
   items:
-  - prefab: {fileID: 927928783616308955, guid: dd00fdfb3b992134ab9763924e6c6e32, type: 3}
-    offset: 0
-    pos: 1
-    yStretch: 0
-    frequency: 0
   - prefab: {fileID: 225406674375079037, guid: 6851e6bb203c32f4db4205d5a2028c45, type: 3}
     offset: 0.497
     pos: 2
@@ -28,7 +23,7 @@ MonoBehaviour:
     pos: 0
     yStretch: 1
     frequency: 0.01
-  maxBranches: 0
+  maxBranches: 1
   minSize: {x: 4, y: 4}
   maxSize: {x: 4, y: 4}
   wallMaterial: {fileID: 2100000, guid: e429c8ff9e485574b8aa09ee44b4da19, type: 2}
